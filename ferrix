@@ -1,0 +1,53 @@
+import streamlit as st
+import random
+
+# Título y subtítulo de la aplicación
+st.title("Lista de Compras de Covas")
+st.subheader("¿Qué necesitas comprar para casa?")
+
+# Inicialización de la lista de compras
+if 'compra_casa' not in st.session_state:
+    st.session_state.compra_casa = []
+
+# Campo de entrada para añadir elementos a la lista
+nuevo_item = st.text_input("Añade un nuevo ítem y pulsa Enter:", key="nuevo_item_input")
+
+# Función para mostrar mensaje gracioso en gallego
+def mostrar_mensaje_gracioso(item):
+    mensajes_graciosos = [
+        f'¡Ai! Que {item} se foi! ¡Andres vai devorar eso todo! 🍴',
+        f'¡Ai! Que {item} se foi! ¡Que mon! Vai engullir iso 🙊',
+        f'¡Ai! Que {item} se foi! ¡Vas acabar co diñeiro! 💸',
+        f'¡Ai! Que {item} se foi! Sigue gastando os cartiños ho 💣'
+    ]
+    mensaje = random.choice(mensajes_graciosos)
+    st.warning(mensaje)
+
+# Evento cuando se presiona Enter en el campo de entrada
+if st.session_state.nuevo_item_input and st.session_state.nuevo_item_input != nuevo_item:
+    st.session_state.nuevo_item_input = nuevo_item
+    if nuevo_item.strip() != "":
+        st.session_state.compra_casa.append({"item": nuevo_item, "eliminado": False})
+        st.success(f'"{nuevo_item}" ha sido añadido a la lista.')
+
+# Botón para agregar un nuevo ítem a la lista
+if st.button("Mais comida pao carro"):
+    if nuevo_item.strip() != "":
+        st.session_state.compra_casa.append({"item": nuevo_item, "eliminado": False})
+        st.success(f'"{nuevo_item}" ha sido añadido a la lista.')
+
+# Mostrar la lista de compras actual y opción para eliminar
+if st.session_state.compra_casa:
+    st.subheader("Lista de Compras:")
+    for idx, item_info in enumerate(st.session_state.compra_casa):
+        checkbox_key = f"eliminar_{idx}"
+        eliminado = st.checkbox(item_info["item"], key=checkbox_key)
+        if eliminado:
+            # Mostrar mensaje gracioso en gallego automáticamente
+            mostrar_mensaje_gracioso(item_info["item"])
+            # Eliminar el ítem de la lista
+            st.session_state.compra_casa.remove(item_info)
+
+# Footer o sección adicional
+st.write("---")
+st.write("¡Que te divirtas comprando! 🛒")
